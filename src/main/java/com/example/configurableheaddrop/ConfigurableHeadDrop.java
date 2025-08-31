@@ -1,26 +1,32 @@
 package com.example.configurableheaddrop;
 
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.*;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.projectiles.ProjectileSource;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
     private FileConfiguration cfg;
@@ -55,7 +61,8 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
         mobEnabled = new HashMap<>();
         if (cfg.isConfigurationSection("mob-heads.chances")) {
             for (String key : cfg.getConfigurationSection("mob-heads.chances").getKeys(false)) {
-                mobChances.put(key.toUpperCase(Locale.ROOT), cfg.getDouble("mob-heads.chances." + key, defaultMobChance));
+                mobChances.put(key.toUpperCase(Locale.ROOT),
+                        cfg.getDouble("mob-heads.chances." + key, defaultMobChance));
             }
         }
         if (cfg.isConfigurationSection("mob-heads.enabled")) {
@@ -77,13 +84,15 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
 
     private void handlePlayerHead(Player dead, EntityDeathEvent event) {
         Player killer = getKillerPlayer(dead);
-        if (onlyWhenKilledByPlayer && killer == null) return;
+        if (onlyWhenKilledByPlayer && killer == null)
+            return;
         double chance = cfg.getDouble("player-heads.default-chance-percent", defaultPlayerChance);
         // per-player override by name (optional)
         if (cfg.isSet("player-heads.chances." + dead.getName())) {
             chance = cfg.getDouble("player-heads.chances." + dead.getName(), chance);
         }
-        if (!roll(chance)) return;
+        if (!roll(chance))
+            return;
 
         ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -105,13 +114,16 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
 
     private void handleMobHead(LivingEntity entity, EntityDeathEvent event) {
         String type = entity.getType().name();
-    // allow server owners to disable specific mob head drops via config
-    boolean allowed = mobEnabled.getOrDefault(type, true);
-    if (!allowed) return;
+        // allow server owners to disable specific mob head drops via config
+        boolean allowed = mobEnabled.getOrDefault(type, true);
+        if (!allowed)
+            return;
         double chance = mobChances.getOrDefault(type, defaultMobChance);
-        if (!roll(chance)) return;
+        if (!roll(chance))
+            return;
         Material headMaterial = getHeadMaterialFor(entity.getType());
-        if (headMaterial == null) return;
+        if (headMaterial == null)
+            return;
         ItemStack head = new ItemStack(headMaterial, 1);
         if (head.getItemMeta() instanceof SkullMeta sm && headMaterial == Material.PLAYER_HEAD) {
             sm.displayName(Component.text(entity.getType().name() + " Head"));
@@ -134,23 +146,28 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
         if (last instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent ede = (EntityDamageByEntityEvent) last;
             Entity damager = ede.getDamager();
-            if (damager instanceof Player) return (Player) damager;
+            if (damager instanceof Player)
+                return (Player) damager;
             if (damager instanceof Projectile) {
                 Projectile proj = (Projectile) damager;
                 ProjectileSource shooter = proj.getShooter();
-                if (shooter instanceof Player) return (Player) shooter;
+                if (shooter instanceof Player)
+                    return (Player) shooter;
             }
             if (damager instanceof Wolf) {
                 Wolf wolf = (Wolf) damager;
-                if (wolf.getOwner() instanceof Player) return (Player) wolf.getOwner();
+                if (wolf.getOwner() instanceof Player)
+                    return (Player) wolf.getOwner();
             }
         }
         return null;
     }
 
     private boolean roll(double percent) {
-        if (percent <= 0) return false;
-        if (percent >= 100) return true;
+        if (percent <= 0)
+            return false;
+        if (percent >= 100)
+            return true;
         return random.nextDouble() * 100.0 < percent;
     }
 
@@ -180,7 +197,8 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
                 // No specific piglin head in vanilla; use player head as fallback
                 return Material.PLAYER_HEAD;
             default:
-                // Many mobs do not have dedicated head items in vanilla (e.g., cow, pig, chicken)
+                // Many mobs do not have dedicated head items in vanilla (e.g., cow, pig,
+                // chicken)
                 return null;
         }
     }
@@ -190,15 +208,18 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
         if (command.getName().equalsIgnoreCase("headdrop")) {
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!sender.hasPermission("configurableheaddrop.reload")) {
-                    sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(Component.text("You don't have permission to run this command.", NamedTextColor.RED)));
+                    sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(
+                            Component.text("You don't have permission to run this command.", NamedTextColor.RED)));
                     return true;
                 }
                 reloadConfig();
                 reloadSettings();
-                sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(Component.text("ConfigurableHeadDrop config reloaded.", NamedTextColor.GREEN)));
+                sender.sendMessage(LegacyComponentSerializer.legacySection()
+                        .serialize(Component.text("ConfigurableHeadDrop config reloaded.", NamedTextColor.GREEN)));
                 return true;
             }
-            sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(Component.text("Usage: /headdrop reload", NamedTextColor.YELLOW)));
+            sender.sendMessage(LegacyComponentSerializer.legacySection()
+                    .serialize(Component.text("Usage: /headdrop reload", NamedTextColor.YELLOW)));
             return true;
         }
         return false;
