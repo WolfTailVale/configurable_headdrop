@@ -1,0 +1,28 @@
+player-heads:
+  # When true, players only drop heads when killed by another player
+  only-when-killed-by-player: true
+  # When true, give the head directly to the killer's inventory (falls back to dropping if full)
+  give-to-killer: true
+  # Default chance (percent) for player head drops
+  default-chance-percent: 100.0
+  # Optional per-player overrides (by name)
+  # chances:
+  #   Notch: 100.0
+
+mob-heads:
+  # Enable mob head drops
+  enabled: true
+  # Default chance (percent) for mob head drops
+  default-chance-percent: 2.0
+  # Per-mob chances (entity type names)
+  chances:
+    CREEPER: 2.0
+    SKELETON: 2.0
+    WITHER_SKELETON: 5.0
+    ZOMBIE: 1.0
+  # Per-mob enable toggles (set false to disable head drops for that mob)
+  enabled:
+    CREEPER: true
+    SKELETON: true
+    WITHER_SKELETON: true
+    ZOMBIE: true
