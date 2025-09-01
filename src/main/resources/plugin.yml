@@ -1,6 +1,6 @@
 name: ConfigurableHeadDrop
 main: com.example.configurableheaddrop.ConfigurableHeadDrop
-version: 1.0
+version: 1.1
 api-version: 1.21
 description: "Configurable plugin to control player and mob head drops, percentages and behavior."
 commands:

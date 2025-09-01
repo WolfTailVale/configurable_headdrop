@@ -1,4 +1,6 @@
 player-heads:
+  # Enable player head drops globally
+  enabled: true
   # When true, players only drop heads when killed by another player
   only-when-killed-by-player: true
   # When true, give the head directly to the killer's inventory (falls back to dropping if full)

@@ -32,6 +32,7 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
     private FileConfiguration cfg;
     private boolean onlyWhenKilledByPlayer;
     private boolean giveToKiller;
+    private boolean playerHeadsEnabled;
     private double defaultMobChance;
     private double defaultPlayerChance;
     private Map<String, Double> mobChances;
@@ -53,6 +54,7 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
 
     private void reloadSettings() {
         cfg = getConfig();
+        playerHeadsEnabled = cfg.getBoolean("player-heads.enabled", true);
         onlyWhenKilledByPlayer = cfg.getBoolean("player-heads.only-when-killed-by-player", true);
         giveToKiller = cfg.getBoolean("player-heads.give-to-killer", true);
         defaultPlayerChance = cfg.getDouble("player-heads.default-chance-percent", 100.0);
@@ -83,6 +85,7 @@ public class ConfigurableHeadDrop extends JavaPlugin implements Listener {
     }
 
     private void handlePlayerHead(Player dead, EntityDeathEvent event) {
+        if (!playerHeadsEnabled) return;
         Player killer = getKillerPlayer(dead);
         if (onlyWhenKilledByPlayer && killer == null)
             return;
