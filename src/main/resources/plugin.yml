@@ -4,12 +4,12 @@ version: 1.0
 api-version: 1.21
 description: "Configurable plugin to control player and mob head drops, percentages and behavior."
 commands:
-	headdrop:
-		description: Manage ConfigurableHeadDrop plugin (reload config)
-		usage: /<command> reload
-		permission: configurableheaddrop.reload
-		permission-message: You don't have permission to use this command.
+  headdrop:
+    description: Manage ConfigurableHeadDrop plugin (reload config)
+    usage: /<command> reload
+    permission: configurableheaddrop.reload
+    permission-message: You don't have permission to use this command.
 permissions:
-	configurableheaddrop.reload:
-		description: Reload ConfigurableHeadDrop configuration
-		default: op
+  configurableheaddrop.reload:
+    description: Reload ConfigurableHeadDrop configuration
+    default: op
